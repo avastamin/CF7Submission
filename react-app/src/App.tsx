@@ -53,7 +53,7 @@ const CF7Submissions = () => {
         setOpen={setOpen}
         selectedSubmission={selectedSubmission}
       />
-      <h1>CF7 Submissions</h1>
+      <h1>Form Submissions</h1>
 
       <div className="mt-8 flow-root">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -92,7 +92,15 @@ const CF7Submissions = () => {
               </thead>
               <tbody className="bg-white">
                 {submissions.map((submission) => (
-                  <tr key={submission.id} className="even:bg-gray-50">
+                  <tr
+                    key={submission.id}
+                    className="even:bg-gray-50 cursor-pointer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setOpen(true);
+                      setSelectedSubmission(submission);
+                    }}
+                  >
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                       {submission.id}
                     </td>
@@ -112,7 +120,8 @@ const CF7Submissions = () => {
                       <a
                         href="#"
                         className="text-indigo-600 hover:text-indigo-900"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.preventDefault();
                           setOpen(true);
                           setSelectedSubmission(submission);
                         }}

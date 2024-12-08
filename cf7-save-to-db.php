@@ -88,7 +88,7 @@ add_action('admin_menu', function () {
 });
 
 
-/*
+
 // Run on plugin activation: Create a custom database table
 register_activation_hook( __FILE__, 'cf7_save_to_db_create_table' );
 function cf7_save_to_db_create_table() {
@@ -189,4 +189,3 @@ function cf7_save_to_db_view_submissions() {
 
     echo '</tbody></table></div>';
 }
-*/
