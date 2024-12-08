@@ -89,6 +89,12 @@ const CF7Submissions = () => {
                     scope="col"
                     className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
                   >
+                    ID
+                  </th>
+                  <th
+                    scope="col"
+                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
+                  >
                     Form ID
                   </th>
                   <th
@@ -111,6 +117,9 @@ const CF7Submissions = () => {
               <tbody className="bg-white">
                 {submissions.map((submission) => (
                   <tr key={submission.id} className="even:bg-gray-50">
+                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
+                      {submission.id}
+                    </td>
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                       {submission.form_id}
                     </td>
