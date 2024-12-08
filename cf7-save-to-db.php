@@ -100,6 +100,7 @@ function cf7_save_to_db_create_table() {
     $sql = "CREATE TABLE $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         form_id mediumint(9) NOT NULL,
+        form_name varchar(255) NOT NULL,
         submission_data text NOT NULL,
         submitted_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
         PRIMARY KEY (id)
@@ -123,6 +124,7 @@ function cf7_save_to_db_submission( $contact_form ) {
 
     $form_data = $submission->get_posted_data();
     $form_id = $contact_form->id();
+    $form_name = $contact_form->title();
     $table_name = $wpdb->prefix . 'cf7_submissions';
 
     // Save form data to the database
@@ -130,6 +132,7 @@ function cf7_save_to_db_submission( $contact_form ) {
         $table_name, 
         array(
             'form_id' => $form_id,
+            'form_name' => $form_name,
             'submission_data' => json_encode( $form_data ),
             'submitted_at' => current_time( 'mysql' ),
         )
@@ -157,7 +160,7 @@ function cf7_save_to_db_view_submissions() {
 
     echo '<div class="wrap"><h1>CF7 Submissions</h1>';
     echo '<table class="wp-list-table widefat fixed striped">';
-    echo '<thead><tr><th>ID</th><th>Form ID</th><th>Submission Data</th><th>Submitted At</th></tr></thead>';
+    echo '<thead><tr><th>ID</th><th>Form ID</th><th>Form Name</th><th>Submission Data</th><th>Submitted At</th></tr></thead>';
     echo '<tbody>';
 
     foreach ( $results as $row ) {
