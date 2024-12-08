@@ -8,6 +8,7 @@ declare global {
 
 import { useState, useEffect } from "react";
 import { truncateString } from "./helpers";
+import SingleSubmissionModal from "./components/SingleSubmissionModal";
 
 interface Submission {
   id: number;
@@ -19,7 +20,9 @@ interface Submission {
 const CF7Submissions = () => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [open, setOpen] = useState<boolean>(false);
+  const [selectedSubmission, setSelectedSubmission] =
+    useState<Submission | null>(null);
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
@@ -45,40 +48,13 @@ const CF7Submissions = () => {
 
   return (
     <div>
+      <SingleSubmissionModal
+        open={open}
+        setOpen={setOpen}
+        selectedSubmission={selectedSubmission}
+      />
       <h1>CF7 Submissions</h1>
 
-      {/*       <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Form ID</th>
-            <th>Submission Data</th>
-            <th>Submitted At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {submissions.map((submission) => (
-            <tr key={submission.id}>
-              <td>{submission.id}</td>
-              <td>{submission.form_id}</td>
-              <td>
-                <ul>
-                  {Object.entries(submission.submission_data).map(
-                    ([key, value]) => (
-                      <li key={key}>
-                        <strong>{key}:</strong>{" "}
-                        {Array.isArray(value) ? value.join(", ") : value}
-                      </li>
-                    )
-                  )}
-                </ul>
-              </td>
-              <td>{submission.submitted_at}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
- */}
       <div className="mt-8 flow-root">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -136,6 +112,10 @@ const CF7Submissions = () => {
                       <a
                         href="#"
                         className="text-indigo-600 hover:text-indigo-900"
+                        onClick={() => {
+                          setOpen(true);
+                          setSelectedSubmission(submission);
+                        }}
                       >
                         View<span className="sr-only">, {submission.id}</span>
                       </a>
