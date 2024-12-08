@@ -6,6 +6,9 @@ console.log("Building with Vite...");
 
 export default defineConfig({
   plugins: [react()],
+  css: {
+    postcss: "./postcss.config.js", // Ensure PostCSS configuration is used
+  },
   build: {
     outDir: path.resolve(__dirname, "../dist"), // Output directory for the plugin
     emptyOutDir: true, // Clean the output directory before building
