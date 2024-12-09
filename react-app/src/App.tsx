@@ -124,7 +124,7 @@ const CF7Submissions = () => {
                         className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                       >
                         {typeof submission.submission_data[key] === "string"
-                          ? truncateString(submission.submission_data[key], 100)
+                          ? truncateString(submission.submission_data[key], 60)
                           : JSON.stringify(submission.submission_data[key])}
                       </td>
                     ))}
