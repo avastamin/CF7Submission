@@ -7,15 +7,9 @@ declare global {
 }
 
 import { useState, useEffect } from "react";
-import { truncateString } from "./helpers";
 import SingleSubmissionModal from "./components/SingleSubmissionModal";
-
-interface Submission {
-  id: number;
-  form_id: number;
-  submission_data: Record<string, string | string[]>;
-  submitted_at: string;
-}
+import { truncateString } from "./helpers";
+import { Submission } from "./types";
 
 const CF7Submissions = () => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -46,6 +40,12 @@ const CF7Submissions = () => {
     return <div>Loading submissions...</div>;
   }
 
+  // Get unique keys from submission_data for table headers
+  const submissionDataKeys =
+    submissions.length > 0
+      ? Object.keys(submissions[0].submission_data || {})
+      : [];
+
   return (
     <div>
       <SingleSubmissionModal
@@ -75,10 +75,18 @@ const CF7Submissions = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
                   >
-                    Submission Data
+                    Form Name
                   </th>
+                  {submissionDataKeys.map((key) => (
+                    <th
+                      key={key}
+                      className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
+                    >
+                      {key}
+                    </th>
+                  ))}
                   <th
                     scope="col"
                     className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
@@ -107,12 +115,19 @@ const CF7Submissions = () => {
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                       {submission.form_id}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {truncateString(
-                        JSON.stringify(submission.submission_data),
-                        100
-                      )}
+                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
+                      {submission?.form_name}
                     </td>
+                    {submissionDataKeys.map((key) => (
+                      <td
+                        key={`${submission.id}-${key}`}
+                        className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                      >
+                        {typeof submission.submission_data[key] === "string"
+                          ? truncateString(submission.submission_data[key], 100)
+                          : JSON.stringify(submission.submission_data[key])}
+                      </td>
+                    ))}
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                       {submission.submitted_at}
                     </td>
