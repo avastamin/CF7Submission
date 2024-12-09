@@ -59,7 +59,7 @@ function cf7_get_form_names() {
 
     // Query to get unique form names
     $results = $wpdb->get_results("
-    SELECT form_id as id, form_name as name, COUNT(*) as count 
+    SELECT form_id as id, form_name as name, COUNT(*) as count, submitted_at as date
     FROM $table_name 
     GROUP BY form_id, form_name
     ORDER BY count DESC
