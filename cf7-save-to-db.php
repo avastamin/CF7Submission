@@ -47,11 +47,19 @@ add_action('admin_enqueue_scripts', function () {
         if ($js_file) {
             wp_enqueue_script(
                 'cf7-react-app',
-                $plugin_dir_url . 'dist/' . $js_file,
-                [],
+                plugin_dir_url(__FILE__) . 'dist/' . $js_file,
+                [], 
                 null,
                 true
             );
+
+            // Add type="module" to the script tag
+            add_filter('script_loader_tag', function ($tag, $handle, $src) {
+                if ($handle === 'cf7-react-app') {
+                    $tag = '<script type="module" src="' . esc_url($src) . '"></script>';
+                }
+                return $tag;
+            }, 10, 3);
 
             // Localize script with API URL
             wp_localize_script('cf7-react-app', 'cf7ReactPlugin', [
