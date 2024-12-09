@@ -165,15 +165,35 @@ add_action('admin_enqueue_scripts', function () {
 
 // Add admin menu for the React app
 add_action('admin_menu', function () {
-    add_menu_page(
-        'CF7 Submissions',
-        'CF7 Submissions',
-        'manage_options',
-        'cf7-react-plugin',
+add_menu_page(
+        'CF7 Submissions', // Page title
+        'CF7 Submissions', // Menu title
+        'manage_options',  // Capability
+        'cf7-react-plugin', // Menu slug
         function () {
-            echo '<div id="root"></div>'; // Mount point for React app
+            echo '<div id="root"></div>'; // React app mount point
         },
-        'dashicons-feedback'
+        'dashicons-feedback',
+        20 // Position
+    );
+   // Submenu for All Submissions
+    add_submenu_page(
+        'cf7-react-plugin', // Parent slug
+        'All Submissions',  // Page title
+        'All Submissions',  // Menu title
+        'manage_options',   // Capability
+        'cf7-react-plugin#/all-submissions', // Route-based slug
+        '__return_null'
+    );
+
+    // Submenu for Form Submissions (handled dynamically by React)
+    add_submenu_page(
+        'cf7-react-plugin', // Parent slug
+        'Form Submissions', // Page title
+        'Form Submissions', // Menu title
+        'manage_options',   // Capability
+        'cf7-react-plugin#/form/123/submission', // Example dynamic route with a default form ID
+        '__return_null'
     );
 });
 
