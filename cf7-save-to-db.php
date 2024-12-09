@@ -10,6 +10,13 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 // Register REST API route for submissions
 add_action('rest_api_init', function () {
+    // Get all form names
+    register_rest_route('cf7/v1', '/form-names', [
+        'methods' => 'GET',
+        'callback' => 'cf7_get_form_names',
+        'permission_callback' => '__return_true', // Replace with proper permissions for production
+    ]);
+    // Get all submissions
     register_rest_route('cf7/v1', '/submissions', [
         'methods' => 'GET',
         'callback' => 'cf7_get_submissions',
@@ -44,6 +51,22 @@ add_action('rest_api_init', function () {
         ],
     ]);
 });
+
+// Callback function to get all form names
+function cf7_get_form_names() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'cf7_submissions';
+
+    // Query to get unique form names
+    $results = $wpdb->get_results("
+    SELECT form_id as id, form_name as name, COUNT(*) as count 
+    FROM $table_name 
+    GROUP BY form_id, form_name
+    ORDER BY count DESC
+    ", ARRAY_A);
+
+    return rest_ensure_response($results);
+}
 
 // Callback function to get all submissions
 function cf7_get_submissions() {

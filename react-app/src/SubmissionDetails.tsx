@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { CalendarDaysIcon, UserCircleIcon } from "@heroicons/react/20/solid";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Submission } from "./types";
 
 const SubmissionDetails = () => {
@@ -64,7 +64,7 @@ const SubmissionDetails = () => {
             <div className="overflow-hidden rounded-lg bg-white shadow">
               <h2
                 id="section-2-title"
-                className="text-base/7 font-semibold text-gray-900"
+                className="text-base/7 font-semibold text-gray-900 px-3 py-2"
               >
                 {submission.form_name}
               </h2>
@@ -102,8 +102,6 @@ const SubmissionDetails = () => {
           </section>
         </div>
       </div>
-
-      <Link to="/">Back to Submissions</Link>
     </div>
   );
 };

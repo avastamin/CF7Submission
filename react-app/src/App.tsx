@@ -1,11 +1,7 @@
-import {
-  HashRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 
 // Import views
+import SubmissionFormList from "./SubmissionFormList";
 import SubmissionsList from "./SubmissionsList";
 import SubmissionDetails from "./SubmissionDetails";
 import SubmissionByForm from "./SubmissionByForm";
@@ -15,7 +11,7 @@ const App = () => {
     <Router>
       <Routes>
         {/* Default route */}
-        <Route path="/" element={<Navigate to="/all-submissions" replace />} />
+        <Route path="/" element={<SubmissionFormList />} />
         <Route path="/all-submissions" element={<SubmissionsList />} />
         <Route
           path="/form/:form_id/submission"
