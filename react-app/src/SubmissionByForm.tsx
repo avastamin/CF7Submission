@@ -8,7 +8,6 @@ declare global {
 }
 
 import { useState, useEffect } from "react";
-import SingleSubmissionModal from "./components/SingleSubmissionModal";
 import { truncateString } from "./helpers";
 import { Submission } from "./types";
 import { Link, useParams } from "react-router-dom";
@@ -17,9 +16,7 @@ const SubmissionByForm = () => {
   const { form_id } = useParams();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState<boolean>(false);
-  const [selectedSubmission, setSelectedSubmission] =
-    useState<Submission | null>(null);
+
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
@@ -51,14 +48,8 @@ const SubmissionByForm = () => {
       : [];
 
   return (
-    <div>
-      <SingleSubmissionModal
-        open={open}
-        setOpen={setOpen}
-        selectedSubmission={selectedSubmission}
-      />
-      <h1>Form Submissions</h1>
-
+    <div className="container mx-auto bg-white shadow rounded-lg mt-8">
+      <h1 className="text-2xl font-bold px-3 py-3">Single Form Submissions</h1>
       <div className="mt-8 flow-root">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -107,11 +98,6 @@ const SubmissionByForm = () => {
                   <tr
                     key={submission.id}
                     className="even:bg-gray-50 cursor-pointer"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpen(true);
-                      setSelectedSubmission(submission);
-                    }}
                   >
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
                       {submission.id}
@@ -139,11 +125,6 @@ const SubmissionByForm = () => {
                       <a
                         href="#"
                         className="text-indigo-600 hover:text-indigo-900 hidden"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setOpen(true);
-                          setSelectedSubmission(submission);
-                        }}
                       >
                         View<span className="sr-only">, {submission.id}</span>
                       </a>

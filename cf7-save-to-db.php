@@ -209,15 +209,6 @@ add_menu_page(
         '__return_null'
     );
 
-    // Submenu for Form Submissions (handled dynamically by React)
-    add_submenu_page(
-        'cf7-react-plugin', // Parent slug
-        'Form Submissions', // Page title
-        'Form Submissions', // Menu title
-        'manage_options',   // Capability
-        'cf7-react-plugin#/form/123/submission', // Example dynamic route with a default form ID
-        '__return_null'
-    );
 });
 
 

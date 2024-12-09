@@ -57,8 +57,7 @@ const SubmissionFormList = () => {
                   className="flex flex-wrap items-center justify-between px-4 py-6 gap-x-6 gap-y-4 sm:flex-nowrap cursor-pointer hover:bg-gray-50"
                 >
                   <div>
-                    {formName.name}
-
+                    <p className="text-lg font-medium">{formName.name}</p>
                     <div className="mt-1 flex items-center gap-x-2 text-xs/5 text-gray-500">
                       <p>Submitted on</p>
                       <svg viewBox="0 0 2 2" className="size-0.5 fill-current">
