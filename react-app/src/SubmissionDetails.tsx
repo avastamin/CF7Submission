@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import { CalendarDaysIcon, UserCircleIcon } from "@heroicons/react/20/solid";
 import { useParams, Link } from "react-router-dom";
 import { Submission } from "./types";
-import { truncateString } from "./helpers";
 
 const SubmissionDetails = () => {
   const { id } = useParams();
@@ -21,98 +21,85 @@ const SubmissionDetails = () => {
     fetchSubmission();
   }, [id]);
 
-  // Get unique keys from submission_data for table headers
-  const submissionDataKeys = submission
-    ? Object.keys(submission.submission_data || {})
-    : [];
-
   if (loading) return <p>Loading submission details...</p>;
   if (!submission) return <p>Submission not found.</p>;
 
   console.log("submission", submission);
   return (
-    <div>
-      <h1>Submission Details</h1>
-      <p>
-        <strong>Form Name:</strong> {submission.form_name}
-      </p>
-      <p>
-        <strong>Submitted At:</strong> {submission.submitted_at}
-      </p>
-      <div className="mt-8 flow-root">
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <table className="min-w-full divide-y divide-gray-300">
-              <thead>
-                <tr>
-                  <th
-                    scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
-                  >
-                    ID
-                  </th>
-                  <th
-                    scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
-                  >
-                    Form ID
-                  </th>
-                  <th
-                    scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
-                  >
-                    Form Name
-                  </th>
-                  {submissionDataKeys.map((key) => (
-                    <th
-                      key={key}
-                      className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-3"
-                    >
-                      {key}
-                    </th>
-                  ))}
-                  <th
-                    scope="col"
-                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                  >
-                    Submitted At
-                  </th>
-                  <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-3">
-                    <span className="sr-only">View</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white">
-                <tr
-                  key={submission.id}
-                  className="even:bg-gray-50 cursor-pointer"
-                >
-                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
-                    {submission.id}
-                  </td>
-                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
-                    {submission.form_id}
-                  </td>
-                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-3">
-                    {submission?.form_name}
-                  </td>
-                  {submissionDataKeys.map((key) => (
-                    <td
-                      key={`${submission.id}-${key}`}
-                      className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
-                    >
-                      {typeof submission.submission_data[key] === "string"
-                        ? truncateString(submission.submission_data[key], 60)
-                        : JSON.stringify(submission.submission_data[key])}
-                    </td>
-                  ))}
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {submission.submitted_at}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+    <div className="container mx-auto">
+      <div className="bg-white shadow px-4 py-6 rounded-lg mb-3">
+        <div className="px-4 sm:px-0">
+          <h3 className="text-base/7 font-semibold text-gray-900">
+            Form Submission Details
+          </h3>
+          <p className="mt-1 max-w-2xl text-sm/6 text-gray-500">
+            Details of the form submission.
+          </p>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
+        <div className="grid grid-cols-1 gap-4 lg:col-span-2 bg-white shadow px-4 py-6 rounded-lg">
+          <div className="min-w-full overflow-x-auto">
+            <div className="overflow-hidden rounded-lg">
+              <dl className="divide-y divide-gray-100">
+                {submission?.submission_data &&
+                  Object.entries(submission.submission_data).map(
+                    ([key, value]) => (
+                      <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                        <dt className="text-sm/6 font-medium text-gray-900">
+                          {key}
+                        </dt>
+                        <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
+                          {Array.isArray(value) ? value.join(", ") : value}
+                        </dd>
+                      </div>
+                    )
+                  )}
+              </dl>
+            </div>
           </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4">
+          <section aria-labelledby="section-2-title">
+            <div className="overflow-hidden rounded-lg bg-white shadow">
+              <h2
+                id="section-2-title"
+                className="text-base/7 font-semibold text-gray-900"
+              >
+                {submission.form_name}
+              </h2>
+              <div className="p-6">
+                {submission.user_name && (
+                  <div className="mt-6 flex w-full flex-none gap-x-4 border-t border-gray-900/5 px-6 pt-6">
+                    <dt className="flex-none">
+                      <span className="sr-only">Client</span>
+                      <UserCircleIcon
+                        aria-hidden="true"
+                        className="h-6 w-5 text-gray-400"
+                      />
+                    </dt>
+                    <dd className="text-sm/6 font-medium text-gray-900">
+                      {submission.user_name}
+                    </dd>
+                  </div>
+                )}
+                <div className="mt-4 flex w-full flex-none gap-x-4 px-6">
+                  <dt className="flex-none">
+                    <span className="sr-only">Due date</span>
+                    <CalendarDaysIcon
+                      aria-hidden="true"
+                      className="h-6 w-5 text-gray-400"
+                    />
+                  </dt>
+                  <dd className="text-sm/6 text-gray-500">
+                    <time dateTime={submission.submitted_at}>
+                      {submission.submitted_at}
+                    </time>
+                  </dd>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
 
