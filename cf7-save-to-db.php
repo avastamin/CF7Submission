@@ -15,8 +15,37 @@ add_action('rest_api_init', function () {
         'callback' => 'cf7_get_submissions',
         'permission_callback' => '__return_true', // Replace with proper permissions in production
     ]);
+    // Get all submissions by form id
+    register_rest_route('cf7/v1', '/submissions/form/(?P<form_id>\d+)', [
+        'methods' => 'GET',
+        'callback' => 'cf7_get_submissions_by_form_id',
+        'permission_callback' => '__return_true', // Replace with proper permissions in production
+        'args' => [
+            'form_id' => [
+                'required' => true,
+                'validate_callback' => function ($param) {
+                    return is_numeric($param);
+                },
+            ],
+        ],
+    ]);
+    // Get submission by ID
+    register_rest_route('cf7/v1', '/submissions/(?P<id>\d+)', [
+        'methods' => 'GET',
+        'callback' => 'cf7_get_submission_by_id',
+        'permission_callback' => '__return_true', // Replace with proper permissions in production
+        'args' => [
+            'id' => [
+                'required' => true,
+                'validate_callback' => function ($param) {
+                    return is_numeric($param);
+                },
+            ],
+        ],
+    ]);
 });
 
+// Callback function to get all submissions
 function cf7_get_submissions() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'cf7_submissions';
@@ -27,6 +56,59 @@ function cf7_get_submissions() {
     }
 
     return rest_ensure_response($results);
+}
+
+// Callback function to get submissions by form ID
+function cf7_get_submissions_by_form_id($request) {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'cf7_submissions';
+    $form_id = $request->get_param('form_id'); // Get the form_id parameter
+
+    // Base query
+    $query = "SELECT * FROM $table_name";
+    $query_args = [];
+
+    // Add WHERE clause if form_id is provided
+    if (!empty($form_id)) {
+        $query .= " WHERE form_id = %d";
+        $query_args[] = $form_id;
+    }
+
+    // Add ORDER BY clause
+    $query .= " ORDER BY submitted_at DESC";
+
+    // Prepare and execute the query
+    $results = $wpdb->get_results($wpdb->prepare($query, ...$query_args), ARRAY_A);
+
+    // Decode JSON submission_data for each result
+    foreach ($results as &$row) {
+        $row['submission_data'] = json_decode($row['submission_data'], true);
+    }
+
+    return rest_ensure_response($results);
+}
+
+// Callback function to get submission by ID
+function cf7_get_submission_by_id($request) {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'cf7_submissions';
+    $id = $request['id'];
+
+    $submission = $wpdb->get_row(
+        $wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $id),
+        ARRAY_A
+    );
+
+    if ($submission) {
+        $submission['submission_data'] = json_decode($submission['submission_data'], true);
+        return rest_ensure_response($submission);
+    } else {
+        return new WP_Error(
+            'submission_not_found',
+            'Submission not found',
+            ['status' => 404]
+        );
+    }
 }
 
 add_action('admin_enqueue_scripts', function () {
