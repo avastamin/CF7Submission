@@ -87,7 +87,7 @@ function cf7_get_submissions_by_form_id($request) {
     $table_name = $wpdb->prefix . 'cf7_submissions';
     $form_id = $request->get_param('form_id'); // Get the form_id parameter
 
-    // Base query
+    // Initialize base query
     $query = "SELECT * FROM $table_name";
     $query_args = [];
 
@@ -100,8 +100,12 @@ function cf7_get_submissions_by_form_id($request) {
     // Add ORDER BY clause
     $query .= " ORDER BY submitted_at DESC";
 
-    // Prepare and execute the query
-    $results = $wpdb->get_results($wpdb->prepare($query, ...$query_args), ARRAY_A);
+    // Prepare and execute the query if there are placeholders
+    if (!empty($query_args)) {
+        $query = $wpdb->prepare($query, ...$query_args);
+    }
+
+    $results = $wpdb->get_results($query, ARRAY_A);
 
     // Decode JSON submission_data for each result
     foreach ($results as &$row) {
@@ -110,6 +114,7 @@ function cf7_get_submissions_by_form_id($request) {
 
     return rest_ensure_response($results);
 }
+
 
 // Callback function to get submission by ID
 function cf7_get_submission_by_id($request) {
@@ -137,12 +142,21 @@ function cf7_get_submission_by_id($request) {
 add_action('admin_enqueue_scripts', function () {
     $plugin_dir_url = plugin_dir_url(__FILE__);
     $plugin_dir_path = plugin_dir_path(__FILE__);
-    
+
     // Path to the manifest file
     $manifest_path = $plugin_dir_path . 'dist/manifest.json';
-    
-    if (file_exists($manifest_path)) {
-        $manifest = json_decode(file_get_contents($manifest_path), true);
+
+    // Use WP Filesystem API to read the manifest file
+    global $wp_filesystem;
+
+    if (empty($wp_filesystem)) {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        WP_Filesystem();
+    }
+
+    if ($wp_filesystem->exists($manifest_path)) {
+        $manifest_content = $wp_filesystem->get_contents($manifest_path);
+        $manifest = json_decode($manifest_content, true);
 
         // Get the hashed JS and CSS files from the manifest
         $js_file = $manifest['index.html']['file'] ?? null;
@@ -153,7 +167,7 @@ add_action('admin_enqueue_scripts', function () {
             wp_enqueue_script(
                 'cf7-react-app',
                 plugin_dir_url(__FILE__) . 'dist/' . $js_file,
-                [], 
+                [],
                 null,
                 true
             );
@@ -172,7 +186,7 @@ add_action('admin_enqueue_scripts', function () {
             ]);
         }
 
-      // Enqueue CSS
+        // Enqueue CSS
         foreach ($css_files as $css_file) {
             wp_enqueue_style(
                 'cf7-react-app',
@@ -185,6 +199,7 @@ add_action('admin_enqueue_scripts', function () {
         wp_die('Manifest file not found. Please run `npm run build` in the react-app directory.');
     }
 });
+
 
 // Add admin menu for the React app
 add_action('admin_menu', function () {
