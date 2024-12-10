@@ -1,9 +1,12 @@
 <?php
 /*
-Plugin Name: CF7 Save to DB
+Plugin Name: Contact Form 7 Save to DB
 Description: Saves Contact Form 7 submissions to the WordPress database.
 Version: 1.0
 Author: Ruhul Amin
+Author URI: https://ruhulamin.me
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -87,7 +90,7 @@ function cf7_get_submissions_by_form_id($request) {
     $table_name = $wpdb->prefix . 'cf7_submissions';
     $form_id = $request->get_param('form_id'); // Get the form_id parameter
 
-    // Initialize base query
+    // Base query
     $query = "SELECT * FROM $table_name";
     $query_args = [];
 
@@ -100,11 +103,14 @@ function cf7_get_submissions_by_form_id($request) {
     // Add ORDER BY clause
     $query .= " ORDER BY submitted_at DESC";
 
-    // Prepare and execute the query if there are placeholders
+    // Prepare the query only when arguments are present
     if (!empty($query_args)) {
-        $query = $wpdb->prepare($query, ...$query_args);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is safely prepared below
+        $query = $wpdb->prepare($query, $query_args);
     }
 
+    // Execute the query
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- The query is safely prepared above
     $results = $wpdb->get_results($query, ARRAY_A);
 
     // Decode JSON submission_data for each result
@@ -114,6 +120,7 @@ function cf7_get_submissions_by_form_id($request) {
 
     return rest_ensure_response($results);
 }
+
 
 
 // Callback function to get submission by ID
@@ -175,6 +182,7 @@ add_action('admin_enqueue_scripts', function () {
             // Add type="module" to the script tag
             add_filter('script_loader_tag', function ($tag, $handle, $src) {
                 if ($handle === 'cf7-react-app') {
+                     // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript -- The script is already enqueued using wp_enqueue_script()
                     $tag = '<script type="module" src="' . esc_url($src) . '"></script>';
                 }
                 return $tag;
@@ -272,7 +280,7 @@ function cf7_save_to_db_submission( $contact_form ) {
         array(
             'form_id' => $form_id,
             'form_name' => $form_name,
-            'submission_data' => json_encode( $form_data ),
+            'submission_data' => wp_json_encode( $form_data ),
             'submitted_at' => current_time( 'mysql' ),
         )
     );
